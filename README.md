@@ -25,3 +25,7 @@ The project features a CI/CD pipeline implemented in Jenkins that automates the 
 - **GitOps Approach**: Automated updates to Helm charts in a separate manifest repository
 - **Traceability**: Full visibility of deployments via Slack notifications
 - **Reliability**: Fail-fast approach with immediate feedback on pipeline failures
+
+### Infrastructure & Scaling
+
+- **Dynamic Jenkins Agent**: The pipeline uses dynamic EC2 agents in Jenkins, provisioning instances on demand and terminating them after use, ensuring efficient, scalable, and cost-effective job execution.
