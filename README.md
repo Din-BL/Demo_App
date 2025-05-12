@@ -1,41 +1,79 @@
-# Node.js Demo Application
-Node.js basic application useful for demos and examples
+# Demo App
 
-&nbsp;
+## About
 
-## General Information
+Demo App is a modern Node.js application showcasing enterprise-level CI/CD practices and DevOps principles. It represents a production-ready implementation of continuous integration and continuous deployment with security scanning, code quality analysis, and automated deployment capabilities.
 
-The application show a basic web page
-![Welcome-Page](https://github.com/selaworkshops/npm-demo-app/blob/master/Images/Image1.png?raw=true)
+## Repository Components
 
-The application have a basic function to determine if a number is prime or not
-![Welcome-Page](https://github.com/selaworkshops/npm-demo-app/blob/master/Images/Image2.png?raw=true)
+The repository is organized into the following key components:
 
-The folder “spec” contains the application tests which are run using the jasmine-node module
-![Welcome-Page](https://github.com/selaworkshops/npm-demo-app/blob/master/Images/Image3.png?raw=true)
-
-The application Dockerfile is very simple, use node as a base image, copy the application files, download the application dependencies and run the application in the port 3000
-![Welcome-Page](https://github.com/selaworkshops/npm-demo-app/blob/master/Images/Image4.png?raw=true)
-
-## Build
-
-Install Dependencies:
 ```
-npm install
+├── .dockerignore      # Configuration for Docker build context
+├── .gitignore         # Git version control exclusions
+├── Dockerfile         # Container image specification
+├── Jenkinsfile        # CI/CD pipeline definition
+├── README.md          # Project documentation
+├── index.html         # Web application entry point
+├── package-lock.json  # Dependency lock file
+├── package.json       # Node.js project metadata
+├── primes.js          # Core application logic
+├── server.js          # Node.js server implementation
+└── spec/              # Test specifications
 ```
 
-Run Tests:
-```
-npm test
-```
+## CI/CD Pipeline Overview
 
-create zip file
-```
-npm run build
-```
+The project features a sophisticated CI/CD pipeline implemented in Jenkins that automates the entire software delivery process. The pipeline is triggered on code changes and executes the following workflow:
 
-Start the Application:
-```
-npm start
-```
+### Continuous Integration
 
+- **Version Management**: Automated retrieval of Git tags for semantic versioning
+- **Parallel Processing**: Concurrent execution of tests and static code analysis for faster feedback
+- **Quality Gates**: SonarQube analysis ensures code quality standards are met
+
+### Continuous Delivery
+
+- **Containerization**: Automated Docker image building with proper versioning
+- **Security Assurance**: Vulnerability scanning with Snyk identifies security issues before deployment
+- **Artifact Storage**: Images are pushed to AWS ECR, providing a secure and scalable registry
+
+### Continuous Deployment
+
+- **GitOps Approach**: Automated updates to Helm charts in a separate manifest repository
+- **Traceability**: Full visibility of deployments via Slack notifications
+- **Reliability**: Fail-fast approach with immediate feedback on pipeline failures
+
+## Security Features
+
+Security is integrated throughout the pipeline:
+
+- SonarQube identifies code vulnerabilities and quality issues
+- Snyk performs container scanning with configurable severity thresholds
+- Credential management via Jenkins credentials store
+- Secure handling of sensitive information like API tokens and passwords
+
+## DevOps Integration
+
+The project demonstrates DevOps best practices:
+
+- **Automation**: Full automation from code commit to deployment
+- **Infrastructure as Code**: Pipeline and deployment configurations stored as code
+- **Feedback Loops**: Fast feedback via parallel testing and Slack notifications
+- **GitOps**: Declarative infrastructure updates via Git
+
+## Environment Support
+
+The pipeline supports multiple environments through branch-based workflows:
+
+- Feature branches for development work
+- Main branch for production releases
+- Tag-based versioning for release management
+
+## Monitoring and Notifications
+
+The pipeline includes comprehensive monitoring and notification systems:
+
+- Slack integration for real-time build status notifications
+- Detailed logging throughout the pipeline execution
+- Traceability from code commit to deployment
