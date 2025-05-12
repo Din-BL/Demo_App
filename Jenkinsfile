@@ -5,6 +5,9 @@ pipeline {
         SLACK_TOKEN     = credentials('Slack_Token')
         SONARQUBE_URL   = credentials('SonarQube_URL')
         SONARQUBE_TOKEN = credentials('SonarQube-Token')
+        GITLAB_IP = credentials('Gitlab_IP')
+        EMAIL = credentials('Email')
+        
     }
 
     stages {
@@ -134,9 +137,9 @@ pipeline {
                 echo 'Pipeline completed successfully.'
                 if (env.BRANCH_NAME && !env.BRANCH_NAME.startsWith('feature')) {
                     updateHelmChart(env.IMAGE_TAG)
-                    sendSlackNotification("Pipeline completed successfully. Image tag: ${env.IMAGE_TAG}")
+                    sendSlackNotification("Deployment completed successfully. Image tag: ${env.IMAGE_TAG}")
                 } else {
-                    sendSlackNotification("Pipeline completed successfully.")
+                    sendSlackNotification("Tests completed successfully on branch `${env.BRANCH_NAME}`.")
                 }
             }
         }
@@ -146,7 +149,7 @@ pipeline {
                 if (env.BRANCH_NAME && !env.BRANCH_NAME.startsWith('feature')) {
                     sendSlackNotification("Pipeline failed. Image tag: ${env.IMAGE_TAG}")
                 } else {
-                    sendSlackNotification("Pipeline failed.")
+                    sendSlackNotification("Tests failed on branch `${env.BRANCH_NAME}`.")
                 }
             }
         }
@@ -156,14 +159,14 @@ pipeline {
 def updateHelmChart(imageTag) {
     withCredentials([usernamePassword(credentialsId: 'Gitlab_Access', passwordVariable: 'GIT_PASSWORD', usernameVariable: 'GIT_USERNAME')]) {
         sh """
-            git clone http://${GIT_USERNAME}:${GIT_PASSWORD}@10.0.11.60/root/manifests.git
+            git clone http://${GIT_USERNAME}:${GIT_PASSWORD}@${GITLAB_IP}/root/manifests.git
             cd manifests
             sed -i 's/tag: .*/tag: ${imageTag}/g' values.yaml
             git config user.name "Din"
-            git config user.email "Dinz5005@gmail.com"
+            git config user.email "${EMAIL}"
             git add .
             git commit -m "Update Docker image tag to ${imageTag}"
-            git push http://${GIT_USERNAME}:${GIT_PASSWORD}@10.0.11.60/root/manifests.git main
+            git push http://${GIT_USERNAME}:${GIT_PASSWORD}@${GITLAB_IP}/root/manifests.git main
         """
     }
 }
