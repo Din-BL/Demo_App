@@ -2,7 +2,7 @@
 
 ## About
 
-Demo App is a Node.js application showcasing a CI/CD practices and DevOps principles. It represents a continuous integration and continuous deployment with security scanning, code quality analysis, and automated deployment capabilities.
+Demo App is a Node.js application that showcases CI/CD practices and DevOps principles. It demonstrates continuous integration and deployment, with features such as security scanning, code quality analysis, and automated deployment.
 
 ## CI/CD Pipeline Overview
 
