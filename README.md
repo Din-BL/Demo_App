@@ -1,3 +1,9 @@
+<p align="center">
+  <img src="https://github.com/user-attachments/assets/f297ed94-952e-4f47-86ee-e5e12ec32693" alt="Image 1" width="550"/>
+  <img src="https://github.com/user-attachments/assets/51c8fa62-a951-4da3-9da3-e9c1eb8ffb51" alt="Image 2" width="550"/>
+</p>
+
+
 # Demo App
 
 ## About
@@ -29,3 +35,5 @@ The project features a CI/CD pipeline implemented in Jenkins that automates the 
 ### Infrastructure & Scaling
 
 - **Dynamic Jenkins Agent**: The pipeline uses dynamic EC2 agents in Jenkins, provisioning instances on demand and terminating them after use, ensuring efficient, scalable, and cost-effective job execution.
+
+
