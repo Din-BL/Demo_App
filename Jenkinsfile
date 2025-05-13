@@ -5,9 +5,8 @@ pipeline {
         SLACK_TOKEN     = credentials('Slack_Token')
         SONARQUBE_URL   = credentials('SonarQube_URL')
         SONARQUBE_TOKEN = credentials('SonarQube-Token')
-        GITLAB_IP = credentials('Gitlab_IP')
-        EMAIL = credentials('Email')
-        
+        GITLAB_IP       = credentials('Gitlab_IP')
+        EMAIL           = credentials('Email')
     }
 
     stages {
@@ -99,39 +98,41 @@ pipeline {
         }
 
         stage('Push to ECR') {
-    when {
-        branch 'main'
-    }
-    steps {
-        script {
-            echo 'Pushing image to ECR...'
-            withCredentials([[$class: 'AmazonWebServicesCredentialsBinding', credentialsId: 'AWS_Credentials', accessKeyVariable: 'AWS_ACCESS_KEY_ID', secretKeyVariable: 'AWS_SECRET_ACCESS_KEY']]) {
-                // Get AWS account ID
-                def awsAccountId = sh(script: 'aws sts get-caller-identity --query Account --output text', returnStdout: true).trim()
-                def awsRegion = 'us-east-1' 
-                
-                // ECR repository name
-                def ecrRepo = 'demo-app'
-                
-                // ECR login
-                sh "aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com"
-                
-                // Tag the image for ECR
-                sh "docker tag dinbl/demo_app:${env.IMAGE_TAG} ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:${env.IMAGE_TAG}"
-                sh "docker tag dinbl/demo_app:latest ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:latest"
-                
-                // Push the image to ECR
-                sh "docker push ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:${env.IMAGE_TAG}"
-                sh "docker push ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:latest"
-                
-                echo "Image pushed to ECR: ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:${env.IMAGE_TAG}"
+            when {
+                branch 'main'
+            }
+            steps {
+                script {
+                    echo 'Pushing image to ECR...'
+                    withCredentials([[
+                        $class: 'AmazonWebServicesCredentialsBinding',
+                        credentialsId: 'AWS_Credentials',
+                        accessKeyVariable: 'AWS_ACCESS_KEY_ID',
+                        secretKeyVariable: 'AWS_SECRET_ACCESS_KEY'
+                    ]]) {
+                        def awsAccountId = sh(script: 'aws sts get-caller-identity --query Account --output text', returnStdout: true).trim()
+                        def awsRegion = 'us-east-1'
+                        def ecrRepo = 'demo-app'
+
+                        sh "aws ecr get-login-password --region ${awsRegion} | docker login --username AWS --password-stdin ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com"
+                        sh "docker tag dinbl/demo_app:${env.IMAGE_TAG} ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:${env.IMAGE_TAG}"
+                        sh "docker tag dinbl/demo_app:latest ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:latest"
+                        sh "docker push ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:${env.IMAGE_TAG}"
+                        sh "docker push ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:latest"
+
+                        echo "Image pushed to ECR: ${awsAccountId}.dkr.ecr.${awsRegion}.amazonaws.com/${ecrRepo}:${env.IMAGE_TAG}"
+                    }
+                }
             }
         }
     }
-}
-    }
 
     post {
+        always {
+            echo 'Cleaning up workspace...'
+            cleanWs()
+        }
+
         success {
             script {
                 echo 'Pipeline completed successfully.'
@@ -143,6 +144,7 @@ pipeline {
                 }
             }
         }
+
         failure {
             script {
                 echo 'Pipeline failed.'
